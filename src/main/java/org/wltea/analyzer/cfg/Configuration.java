@@ -3,126 +3,73 @@
  */
 package org.wltea.analyzer.cfg;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.InvalidPropertiesFormatException;
-import java.util.List;
-import java.util.Properties;
-
-import org.elasticsearch.common.logging.ESLogger;
-import org.elasticsearch.common.logging.Loggers;
+import org.elasticsearch.common.inject.Inject;
+import org.elasticsearch.common.io.PathUtils;
+import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.env.Environment;
+import org.elasticsearch.plugin.analysis.ik.AnalysisIkPlugin;
+import org.wltea.analyzer.dic.Dictionary;
+
+import java.io.File;
+import java.nio.file.Path;
 
 public class Configuration {
 
-	private static String FILE_NAME = "ik/IKAnalyzer.cfg.xml";
-	private static final String EXT_DICT = "ext_dict";
-	private static final String REMOTE_EXT_DICT = "remote_ext_dict";
-	private static final String EXT_STOP = "ext_stopwords";
-	private static final String REMOTE_EXT_STOP = "remote_ext_stopwords";
-    private static ESLogger logger = null;
-	private Properties props;
-    private Environment environment;
+	private Environment environment;
+	private Settings settings;
 
-    public  Configuration(Environment env){
-        logger = Loggers.getLogger("ik-analyzer");
-		props = new Properties();
-        environment = env;
+	//是否启用智能分词
+	private  boolean useSmart;
 
-        File fileConfig= new File(environment.configFile(), FILE_NAME);
+	//是否启用远程词典加载
+	private boolean enableRemoteDict=false;
 
-        InputStream input = null;
-        try {
-            input = new FileInputStream(fileConfig);
-        } catch (FileNotFoundException e) {
-            logger.error("ik-analyzer",e);
-        }
-        if(input != null){
-			try {
-				props.loadFromXML(input);
-			} catch (InvalidPropertiesFormatException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+	//是否启用小写处理
+	private boolean enableLowercase=true;
+
+
+	@Inject
+	public Configuration(Environment env,Settings settings) {
+		this.environment = env;
+		this.settings=settings;
+
+		this.useSmart = settings.get("use_smart", "false").equals("true");
+		this.enableLowercase = settings.get("enable_lowercase", "true").equals("true");
+		this.enableRemoteDict = settings.get("enable_remote_dict", "true").equals("true");
+
+		Dictionary.initial(this);
+
 	}
 
-    public  List<String> getExtDictionarys(){
-		List<String> extDictFiles = new ArrayList<String>(2);
-		String extDictCfg = props.getProperty(EXT_DICT);
-		if(extDictCfg != null){
-
-			String[] filePaths = extDictCfg.split(";");
-			if(filePaths != null){
-				for(String filePath : filePaths){
-					if(filePath != null && !"".equals(filePath.trim())){
-                        File file=new File("ik",filePath.trim());
-						extDictFiles.add(file.toString());
-
-					}
-				}
-			}
-		}		
-		return extDictFiles;		
-	}
-    
-    public  List<String> getRemoteExtDictionarys(){
-		List<String> remoteExtDictFiles = new ArrayList<String>(2);
-		String remoteExtDictCfg = props.getProperty(REMOTE_EXT_DICT);
-		if(remoteExtDictCfg != null){
-
-			String[] filePaths = remoteExtDictCfg.split(";");
-			if(filePaths != null){
-				for(String filePath : filePaths){
-					if(filePath != null && !"".equals(filePath.trim())){
-						remoteExtDictFiles.add(filePath);
-
-					}
-				}
-			}
-		}		
-		return remoteExtDictFiles;		
+	public Path getConfigInPluginDir() {
+		return PathUtils
+				.get(new File(AnalysisIkPlugin.class.getProtectionDomain().getCodeSource().getLocation().getPath())
+						.getParent(), "config")
+				.toAbsolutePath();
 	}
 
-	public List<String> getExtStopWordDictionarys(){
-		List<String> extStopWordDictFiles = new ArrayList<String>(2);
-		String extStopWordDictCfg = props.getProperty(EXT_STOP);
-		if(extStopWordDictCfg != null){
-			
-			String[] filePaths = extStopWordDictCfg.split(";");
-			if(filePaths != null){
-				for(String filePath : filePaths){
-					if(filePath != null && !"".equals(filePath.trim())){
-                        File file=new File("ik",filePath.trim());
-						extStopWordDictFiles.add(file.toString());
-
-					}
-				}
-			}
-		}		
-		return extStopWordDictFiles;		
-	}
-	
-	public  List<String> getRemoteExtStopWordDictionarys(){
-		List<String> remoteExtStopWordDictFiles = new ArrayList<String>(2);
-		String remoteExtStopWordDictCfg = props.getProperty(REMOTE_EXT_STOP);
-		if(remoteExtStopWordDictCfg != null){
-
-			String[] filePaths = remoteExtStopWordDictCfg.split(";");
-			if(filePaths != null){
-				for(String filePath : filePaths){
-					if(filePath != null && !"".equals(filePath.trim())){
-						remoteExtStopWordDictFiles.add(filePath);
-
-					}
-				}
-			}
-		}		
-		return remoteExtStopWordDictFiles;		
+	public boolean isUseSmart() {
+		return useSmart;
 	}
 
-    public File getDictRoot() {
-        return environment.configFile();
-    }
+	public Configuration setUseSmart(boolean useSmart) {
+		this.useSmart = useSmart;
+		return this;
+	}
+
+	public Environment getEnvironment() {
+		return environment;
+	}
+
+	public Settings getSettings() {
+		return settings;
+	}
+
+	public boolean isEnableRemoteDict() {
+		return enableRemoteDict;
+	}
+
+	public boolean isEnableLowercase() {
+		return enableLowercase;
+	}
 }
