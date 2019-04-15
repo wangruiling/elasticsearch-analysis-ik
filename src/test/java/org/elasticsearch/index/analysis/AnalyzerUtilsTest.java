@@ -36,14 +36,14 @@ public class AnalyzerUtilsTest {
 
     private static Analyzer initAnalyzer() {
         Settings settings = Settings.builder()
-                .put("path.home", "C:/tools/Elastic/elasticsearch-6.6.2")
-                .put("path.conf", "C:/tools/Elastic/elasticsearch-6.6.2")
+                .put("path.home", "C:/tools/Elastic/elasticsearch-7.0.0")
+                .put("path.conf", "C:/tools/Elastic/elasticsearch-7.0.0")
                 .put("use_smart", "true")
                 .put("enable_lowercase", "false")
                 .put("enable_remote_dict", "false")
                 .build();
 
-        Path configPath = Paths.get("D:/tools/JetBrains/projects/bluejean-boots/third-project/elasticsearch-analysis-ik/");
+        Path configPath = Paths.get("C:/tools/Elastic/ik/");
         Environment env = new Environment(settings, configPath);
 
         //构建IK分词器，使用smart分词模式
@@ -52,7 +52,6 @@ public class AnalyzerUtilsTest {
         Configuration configuration = new Configuration(env, settings).setUseSmart(useSmart);
 
         Analyzer analyzer = new IKAnalyzer(configuration);
-
 
         return analyzer;
     }
