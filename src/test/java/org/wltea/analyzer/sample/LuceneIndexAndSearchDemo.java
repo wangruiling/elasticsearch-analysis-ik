@@ -41,7 +41,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.store.MMapDirectory;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.env.Environment;
 import org.wltea.analyzer.cfg.Configuration;
@@ -85,7 +85,8 @@ public class LuceneIndexAndSearchDemo {
         IndexSearcher isearcher = null;
         try {
             //建立内存索引对象
-            directory = new RAMDirectory();
+            Path path = Paths.get("d:/tmp/elk");
+            directory = new MMapDirectory(path);
 
             //配置IndexWriterConfig
             IndexWriterConfig iwConfig = new IndexWriterConfig(analyzer);
@@ -116,7 +117,7 @@ public class LuceneIndexAndSearchDemo {
             System.out.println("命中：" + topDocs.totalHits);
             //输出结果
             ScoreDoc[] scoreDocs = topDocs.scoreDocs;
-            for (int i = 0; i < topDocs.totalHits; i++) {
+            for (int i = 0; i < topDocs.totalHits.value; i++) {
                 Document targetDoc = isearcher.doc(scoreDocs[i].doc);
                 System.out.println("内容：" + targetDoc.toString());
             }
@@ -143,14 +144,14 @@ public class LuceneIndexAndSearchDemo {
 
     private static Analyzer initAnalyzer() {
         Settings settings = Settings.builder()
-                .put("path.home", "C:/tools/Elastic/elasticsearch-6.6.2")
-                .put("path.conf", "C:/tools/Elastic/elasticsearch-6.6.2")
+                .put("path.home", "C:/tools/Elastic/elasticsearch-7.0.0")
+                .put("path.conf", "C:/tools/Elastic/elasticsearch-7.0.0")
                 .put("use_smart", "true")
                 .put("enable_lowercase", "false")
                 .put("enable_remote_dict", "false")
                 .build();
 
-        Path configPath = Paths.get("D:/tools/JetBrains/projects/bluejean-boots/third-project/elasticsearch-analysis-ik/");
+        Path configPath = Paths.get("C:/tools/Elastic/ik/");
         Environment env = new Environment(settings, configPath);
 
         //构建IK分词器，使用smart分词模式
