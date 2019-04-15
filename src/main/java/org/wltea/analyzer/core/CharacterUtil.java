@@ -72,8 +72,12 @@ class CharacterUtil {
 					//日文字符集
 					|| ub == Character.UnicodeBlock.HIRAGANA //平假名
 					|| ub == Character.UnicodeBlock.KATAKANA //片假名
-					|| ub == Character.UnicodeBlock.KATAKANA_PHONETIC_EXTENSIONS){
-				return CHAR_OTHER_CJK;
+					|| ub == Character.UnicodeBlock.KATAKANA_PHONETIC_EXTENSIONS
+                    /************** 2016/4/08 此处使用使用新的字符处理规则:特殊字符'-' By:wangrl start ****************/
+                    || input == '-'
+                    /************** 2016/4/08 此处使用使用新的字符处理规则 By:wangrl start ****************/
+                    ) {
+                return CHAR_OTHER_CJK;
 				
 			}
 		}
@@ -86,14 +90,14 @@ class CharacterUtil {
 	 * @param input
 	 * @return char
 	 */
-	static char regularize(char input){
+	static char regularize(char input,boolean lowercase){
         if (input == 12288) {
             input = (char) 32;
             
         }else if (input > 65280 && input < 65375) {
             input = (char) (input - 65248);
             
-        }else if (input >= 'A' && input <= 'Z') {
+        }else if (input >= 'A' && input <= 'Z' && lowercase) {
         	input += 32;
 		}
         
