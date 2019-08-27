@@ -61,11 +61,15 @@ public class IKAnalzyerDemo {
     public static void main(String[] args) {
         Analyzer analyzer = initAnalyzer();
 
+        //String text = "IK Analyzer是一个结合词典分词和文法分词的中文分词开源工具包。它使用了全新的正向迭代最细粒度切分算法。";
+        //String text = "安徽省长江流域";
+        String text = "215|中国|华北|北京市|北京市|联通";
+        //String text = "这是一个中文分词的例子，你可以直接运行它！IKAnalyer can analysis english text too";
+
         //获取Lucene的TokenStream对象
         TokenStream ts = null;
         try {
-            //ts = analyzer.tokenStream("myfield", new StringReader("215|中国|华北|北京市|北京市|联通"));
-            ts = analyzer.tokenStream("myfield", new StringReader("这是一个中文分词的例子，你可以直接运行它！IKAnalyer can analysis english text too"));
+            ts = analyzer.tokenStream("myfield", new StringReader(text));
             //获取词元位置属性
             OffsetAttribute offset = ts.addAttribute(OffsetAttribute.class);
             //获取词元文本属性
@@ -115,9 +119,7 @@ public class IKAnalzyerDemo {
 
         Configuration configuration = new Configuration(env, settings).setUseSmart(useSmart);
 
-        Analyzer analyzer = new IKAnalyzer(configuration);
-
-        return analyzer;
+        return new IKAnalyzer(configuration);
     }
 
 }

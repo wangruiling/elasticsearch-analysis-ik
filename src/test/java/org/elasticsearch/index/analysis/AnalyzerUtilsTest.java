@@ -28,22 +28,22 @@ public class AnalyzerUtilsTest {
 //        AnalyzerUtils.displayToken(txt, a2);
 //        AnalyzerUtils.displayToken(txt, a3);
 //        AnalyzerUtils.displayToken(txt, a4);
-        AnalyzerUtils.displayToken(txt, ik);
-        AnalyzerUtils.displayToken(txt, ikSmart);
+//        AnalyzerUtils.displayToken(txt, ik);
+//        AnalyzerUtils.displayToken(txt, ikSmart);
         AnalyzerUtils.displayToken(txt, ii);
 
     }
 
     private static Analyzer initAnalyzer() {
         Settings settings = Settings.builder()
-                .put("path.home", "C:/tools/Elastic/elasticsearch-7.0.0")
-                .put("path.conf", "C:/tools/Elastic/elasticsearch-7.0.0")
+                .put("path.home", "C:/tools/Elastic/elasticsearch-7.3.1")
+                .put("path.conf", "C:/tools/Elastic/elasticsearch-7.3.1")
                 .put("use_smart", "true")
                 .put("enable_lowercase", "false")
                 .put("enable_remote_dict", "false")
                 .build();
 
-        Path configPath = Paths.get("C:/tools/Elastic/ik/");
+        Path configPath = Paths.get("C:/tools/Elastic/elasticsearch-7.3.1/config");
         Environment env = new Environment(settings, configPath);
 
         //构建IK分词器，使用smart分词模式
