@@ -2,7 +2,7 @@ package org.wltea.analyzer.synonym;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.Tokenizer;
-import org.apache.lucene.analysis.synonym.SynonymFilterFactory;
+import org.apache.lucene.analysis.synonym.SynonymGraphFilterFactory;
 import org.wltea.analyzer.cfg.Configuration;
 import org.wltea.analyzer.lucene.IKTokenizer;
 
@@ -23,19 +23,20 @@ public class IKSynonymsAnalyzer extends Analyzer{
     protected TokenStreamComponents createComponents(String fieldName) {
         //原文链接：https://blog.csdn.net/winnerspring/article/details/37567739
 
-        Tokenizer token = new IKTokenizer(configuration);
+        Tokenizer tokenizer = new IKTokenizer(configuration);
         Map<String, String> paramsMap = new HashMap<>(2);
         paramsMap.put("luceneMatchVersion", "LUCENE_43");
         paramsMap.put("synonyms", "C:\\同义词\\synonyms.txt");
-        SynonymFilterFactory factory=new SynonymFilterFactory(paramsMap);
-        //FilesystemResourceLoader loader = new FilesystemResourceLoader();
+
+        //SynonymGraphFilter synonymGraphFilter = new SynonymGraphFilter(tokenizer);
+        SynonymGraphFilterFactory factory = new SynonymGraphFilterFactory(paramsMap);
         try {
-            //factory.inform(loader);
+            factory.inform(loader);
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        return new TokenStreamComponents(token, factory.create(token));
+        return new TokenStreamComponents(tokenizer, factory.create(tokenizer));
     }
 
 
