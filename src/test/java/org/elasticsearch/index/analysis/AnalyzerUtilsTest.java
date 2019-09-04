@@ -2,7 +2,12 @@ package org.elasticsearch.index.analysis;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.apache.lucene.analysis.core.SimpleAnalyzer;
+import org.apache.lucene.analysis.core.UnicodeWhitespaceAnalyzer;
+import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
+import org.apache.lucene.analysis.en.EnglishAnalyzer;
+import org.apache.lucene.analysis.standard.ClassicAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.env.Environment;
@@ -18,13 +23,28 @@ public class AnalyzerUtilsTest {
     public void displayToken() {
         String txt = "Adventure,Arm Around,Camping,Car,Car Trunk,Carefree,Casual Clothing,Cheerful,Couple,Day,Expressing Positivity,Forest,Grass,Green,Happiness,Healthy Lifestyle,Heterosexual Couple,Journey,Leisure Activity,Loving,Nature,Non-Urban Scene,Outdoors,Playful,Playing,Recreational Pursuit,Romance,Smiling,Summer,Tent,Togetherness,Toothy Smile,Transportation,Travel,Tree,Vacations,Weekend Activities,Young Couple,People,20s,Adults Only,Young Adult,Asian and Indian Ethnicities,Asian Ethnicity,Chinese Ethnicity,Oriental Ethnicity,Females,Males,Men,Women,Young Men,Young Women,Two People,Asia,Beijing,China,East Asia,Color Image,Front View,Horizontal,Looking At Camera,Photography,Portrait,Waist Up";
 
-        Analyzer analyzer = new StandardAnalyzer();
-        TokenStream stream = analyzer.tokenStream("content", txt);
-        AnalyzerUtils.displayToken(stream);
+        Analyzer analyzer1 = new StandardAnalyzer();
+        Analyzer analyzer2 = new EnglishAnalyzer();
+        Analyzer analyzer3 = new KeywordAnalyzer();
+        Analyzer analyzer4 = new WhitespaceAnalyzer();
+        Analyzer analyzer5 = new UnicodeWhitespaceAnalyzer();
+        Analyzer analyzer6 = new ClassicAnalyzer();
+
+        AnalyzerUtils.displayToken(txt, analyzer1);
+        System.out.println("------------------------------------");
+        AnalyzerUtils.displayToken(txt, analyzer2);
+        System.out.println("------------------------------------");
+        AnalyzerUtils.displayToken(txt, analyzer3);
+        System.out.println("------------------------------------");
+        AnalyzerUtils.displayToken(txt, analyzer4);
+        System.out.println("------------------------------------");
+        AnalyzerUtils.displayToken(txt, analyzer5);
+        System.out.println("------------------------------------");
+        AnalyzerUtils.displayToken(txt, analyzer6);
     }
 
     @Test
-    public void displayAllTokenInfo() throws Exception {
+    public void displayAllTokenInfo() {
         String txt = "Adventure,Arm Around,Camping,Car,Car Trunk,Carefree,Casual Clothing,Cheerful,Couple,Day,Expressing Positivity,Forest,Grass,Green,Happiness,Healthy Lifestyle,Heterosexual Couple,Journey,Leisure Activity,Loving,Nature,Non-Urban Scene,Outdoors,Playful,Playing,Recreational Pursuit,Romance,Smiling,Summer,Tent,Togetherness,Toothy Smile,Transportation,Travel,Tree,Vacations,Weekend Activities,Young Couple,People,20s,Adults Only,Young Adult,Asian and Indian Ethnicities,Asian Ethnicity,Chinese Ethnicity,Oriental Ethnicity,Females,Males,Men,Women,Young Men,Young Women,Two People,Asia,Beijing,China,East Asia,Color Image,Front View,Horizontal,Looking At Camera,Photography,Portrait,Waist Up";
 
         Analyzer analyzer = new StandardAnalyzer();

@@ -3,12 +3,9 @@ package org.wltea.analyzer.synonym;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.synonym.SynonymFilterFactory;
-import org.apache.lucene.analysis.util.FilesystemResourceLoader;
 import org.wltea.analyzer.cfg.Configuration;
 import org.wltea.analyzer.lucene.IKTokenizer;
 
-import java.io.IOException;
-import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,10 +28,10 @@ public class IKSynonymsAnalyzer extends Analyzer{
         paramsMap.put("luceneMatchVersion", "LUCENE_43");
         paramsMap.put("synonyms", "C:\\同义词\\synonyms.txt");
         SynonymFilterFactory factory=new SynonymFilterFactory(paramsMap);
-        FilesystemResourceLoader loader = new FilesystemResourceLoader();
+        //FilesystemResourceLoader loader = new FilesystemResourceLoader();
         try {
-            factory.inform(loader);
-        } catch (IOException e) {
+            //factory.inform(loader);
+        } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
