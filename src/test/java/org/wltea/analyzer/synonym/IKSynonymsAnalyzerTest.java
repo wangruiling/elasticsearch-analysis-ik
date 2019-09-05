@@ -1,4 +1,9 @@
-package org.wltea.analyzer.lucene.synonym;
+package org.wltea.analyzer.synonym;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
@@ -12,24 +17,20 @@ import org.elasticsearch.index.analysis.AnalyzerUtils;
 import org.junit.jupiter.api.Test;
 import org.wltea.analyzer.cfg.Configuration;
 import org.wltea.analyzer.lucene.IKAnalyzer;
-import org.wltea.analyzer.synonym.IKSynonymsAnalyzer;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
 
-/**
- * 原文链接：https://blog.csdn.net/winnerspring/article/details/37521101
- *
- * @author wangrl
- * @Date: 2019-08-27 16:31
- */
-public class SynonymsTest {
-
+class IKSynonymsAnalyzerTest {
     @Test
     public void testSynonyms() {
-        String text = "215|中国|华北|北京市|北京市|联通 这是一个人的4S店，这是有15-2岁婴儿的一家五口";
+        String text = "domain name system is fragile";
+        Analyzer analyzer = new IKSynonymsAnalyzer();
+        AnalyzerUtils.displayToken(text, analyzer);
+    }
+
+    @Test
+    public void testSynonyms2() {
+//        String text = "215|中国|华北|北京市|北京市|联通 这是一个人的4S店，这是有15-2岁婴儿的一家五口";
+        String text = "domain name system is fragile";
         IKSynonymsAnalyzer analyzer = new IKSynonymsAnalyzer(initConfiguration());
 
         AnalyzerUtils.displayToken(text, analyzer);
