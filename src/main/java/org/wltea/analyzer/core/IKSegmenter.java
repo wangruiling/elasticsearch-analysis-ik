@@ -81,7 +81,7 @@ public final class IKSegmenter {
         //处理字母的子分词器
         //segmenters.add(new LetterSegmenter());
         //处理中文数量词的子分词器
-        //segmenters.add(new CN_QuantifierSegmenter());
+        segmenters.add(new CN_QuantifierSegmenter());
         /*************** 2016/4/08 此处使用使用新的字符处理规则 By:wangrl start *****************/
 
         //处理中文词的子分词器
