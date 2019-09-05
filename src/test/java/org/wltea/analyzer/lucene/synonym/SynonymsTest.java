@@ -3,17 +3,17 @@ package org.wltea.analyzer.lucene.synonym;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.synonym.SynonymGraphFilterFactory;
-import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.util.ClasspathResourceLoader;
 import org.apache.lucene.analysis.util.FilesystemResourceLoader;
 import org.apache.lucene.util.Version;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.env.Environment;
+import org.elasticsearch.index.analysis.AnalyzerUtils;
+import org.junit.jupiter.api.Test;
 import org.wltea.analyzer.cfg.Configuration;
 import org.wltea.analyzer.lucene.IKAnalyzer;
+import org.wltea.analyzer.synonym.IKSynonymsAnalyzer;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -26,22 +26,18 @@ import java.util.Map;
  * @Date: 2019-08-27 16:31
  */
 public class SynonymsTest {
-    private static void displayTokens(TokenStream ts) throws IOException {
-        CharTermAttribute termAttr = ts.addAttribute(CharTermAttribute.class);
-        OffsetAttribute offsetAttribute = ts.addAttribute(OffsetAttribute.class);
-        ts.reset();
-        while (ts.incrementToken()) {
-            String token = termAttr.toString();
-            System.out.print(offsetAttribute.startOffset() + "-" + offsetAttribute.endOffset() + "[" + token + "] ");
-        }
-        System.out.println();
-        ts.end();
-        ts.close();
+
+    @Test
+    public void testSynonyms() {
+        String text = "215|中国|华北|北京市|北京市|联通 这是一个人的4S店，这是有15-2岁婴儿的一家五口";
+        IKSynonymsAnalyzer analyzer = new IKSynonymsAnalyzer(initConfiguration());
+
+        AnalyzerUtils.displayToken(text, analyzer);
     }
 
     public static void main(String[] args) throws Exception {
         //String testInput = "其实 i似 好人";
-        String testInput = "三劫散仙是一个菜鸟";
+        String testInput = "this is a tom";
         Version ver = Version.LUCENE_8_1_0;
         Map<String, String> filterArgs = new HashMap<String, String>();
         filterArgs.put("luceneMatchVersion", ver.toString());
@@ -51,7 +47,7 @@ public class SynonymsTest {
         factory.inform(new FilesystemResourceLoader(Paths.get("C:/tools/Elastic/ik/config"), new ClasspathResourceLoader(Thread.currentThread().getContextClassLoader())));
         Analyzer ikAnalyzer = initAnalyzer();
         TokenStream ts = factory.create(ikAnalyzer.tokenStream("someField", testInput));
-        displayTokens(ts);
+        AnalyzerUtils.displayToken(ts);
     }
 
     private static Analyzer initAnalyzer() {
@@ -72,5 +68,25 @@ public class SynonymsTest {
         Configuration configuration = new Configuration(env, settings).setUseSmart(useSmart);
 
         return new IKAnalyzer(configuration);
+    }
+
+    private static Configuration initConfiguration() {
+        Settings settings = Settings.builder()
+                .put("path.home", "C:/tools/Elastic/elasticsearch-7.3.1")
+                .put("path.conf", "C:/tools/Elastic/elasticsearch-7.3.1")
+                .put("use_smart", "true")
+                .put("enable_lowercase", "false")
+                .put("enable_remote_dict", "false")
+                .build();
+
+        Path configPath = Paths.get("C:/tools/Elastic/elasticsearch-7.3.1/config");
+        Environment env = new Environment(settings, configPath);
+
+        //构建IK分词器，使用smart分词模式
+        boolean useSmart = true;
+
+        Configuration configuration = new Configuration(env, settings).setUseSmart(useSmart);
+
+        return configuration;
     }
 }
