@@ -2,13 +2,17 @@ package org.wltea.analyzer.synonym;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.Tokenizer;
-import org.apache.lucene.analysis.synonym.SynonymGraphFilter;
-import org.apache.lucene.analysis.synonym.SynonymMap;
-import org.apache.lucene.util.CharsRef;
+import org.apache.lucene.analysis.synonym.SynonymGraphFilterFactory;
+import org.apache.lucene.analysis.util.ClasspathResourceLoader;
+import org.apache.lucene.analysis.util.FilesystemResourceLoader;
 import org.wltea.analyzer.cfg.Configuration;
 import org.wltea.analyzer.lucene.IKTokenizer;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -29,46 +33,46 @@ public class IKSynonymsAnalyzer extends Analyzer{
         this.configuration = configuration;
     }
 
-    @Override
-    protected TokenStreamComponents createComponents(String fieldName) {
-
-        Tokenizer tokenizer = new IKTokenizer(configuration);
-
-        SynonymMap.Builder synonymsBuilder = new SynonymMap.Builder();
-        CharsRef input = new CharsRef("一家五口");
-        CharsRef output = new CharsRef("爷爷,奶奶,五个人");
-        synonymsBuilder.add(input, output, true);
-
-        SynonymMap synonyms = null;
-        try {
-            synonyms = synonymsBuilder.build();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        SynonymGraphFilter synonymGraphFilter = new SynonymGraphFilter(tokenizer, synonyms, false);
-        return new TokenStreamComponents(tokenizer, synonymGraphFilter);
-    }
-
     //@Override
     //protected TokenStreamComponents createComponents(String fieldName) {
-    //    //原文链接：https://blog.csdn.net/winnerspring/article/details/37567739
     //
     //    Tokenizer tokenizer = new IKTokenizer(configuration);
-    //    Map<String, String> paramsMap = new HashMap<>(2);
-    //    paramsMap.put("synonyms", "synonym.txt");
-    //    //paramsMap.put("analyzer", "");
-    //    //paramsMap.put("tokenizerFactory", "");
     //
-    //    SynonymGraphFilterFactory factory = new SynonymGraphFilterFactory(paramsMap);
+    //    SynonymMap.Builder synonymsBuilder = new SynonymMap.Builder();
+    //    CharsRef input = new CharsRef("一家五口");
+    //    CharsRef output = new CharsRef("爷爷,奶奶,五个人");
+    //    synonymsBuilder.add(input, output, true);
+    //
+    //    SynonymMap synonyms = null;
     //    try {
-    //        Path baseDirectory = Paths.get("C:/tools/Elastic/ik/config/");
-    //        factory.inform(new FilesystemResourceLoader(baseDirectory, new ClasspathResourceLoader(Thread.currentThread().getContextClassLoader())));
-    //        //factory.inform(new ClasspathResourceLoader(Thread.currentThread().getContextClassLoader()));
+    //        synonyms = synonymsBuilder.build();
     //    } catch (IOException e) {
     //        e.printStackTrace();
     //    }
-    //    return new TokenStreamComponents(tokenizer, factory.create(tokenizer));
+    //
+    //    SynonymGraphFilter synonymGraphFilter = new SynonymGraphFilter(tokenizer, synonyms, false);
+    //    return new TokenStreamComponents(tokenizer, synonymGraphFilter);
     //}
+
+    @Override
+    protected TokenStreamComponents createComponents(String fieldName) {
+        //原文链接：https://blog.csdn.net/winnerspring/article/details/37567739
+
+        Tokenizer tokenizer = new IKTokenizer(configuration);
+        Map<String, String> paramsMap = new HashMap<>(2);
+        paramsMap.put("synonyms", "synonym.txt");
+        //paramsMap.put("analyzer", "");
+        //paramsMap.put("tokenizerFactory", "");
+
+        SynonymGraphFilterFactory factory = new SynonymGraphFilterFactory(paramsMap);
+        try {
+            Path baseDirectory = Paths.get("C:/tools/Elastic/ik/config/");
+            factory.inform(new FilesystemResourceLoader(baseDirectory, new ClasspathResourceLoader(Thread.currentThread().getContextClassLoader())));
+            //factory.inform(new ClasspathResourceLoader(Thread.currentThread().getContextClassLoader()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new TokenStreamComponents(tokenizer, factory.create(tokenizer));
+    }
 
 }
