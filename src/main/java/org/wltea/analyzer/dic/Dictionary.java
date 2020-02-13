@@ -1,27 +1,47 @@
 /**
  * IK 中文分词  版本 5.0
  * IK Analyzer release 5.0
- * <p>
+ *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * <p>
+ *
  * 源代码由林良益(linliangyi2005@gmail.com)提供
  * 版权声明 2012，乌龙茶工作室
  * provided by Linliangyi and copyright 2012 by Oolong studio
+ *
+ *
  */
 package org.wltea.analyzer.dic;
+
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.Files;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -30,28 +50,12 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.logging.log4j.Logger;
 import org.elasticsearch.SpecialPermission;
 import org.elasticsearch.common.io.PathUtils;
 import org.elasticsearch.plugin.analysis.ik.AnalysisIkPlugin;
 import org.wltea.analyzer.cfg.Configuration;
+import org.apache.logging.log4j.Logger;
 import org.wltea.analyzer.help.ESPluginLoggerFactory;
-
-import java.io.*;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Properties;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -86,11 +90,11 @@ public class Dictionary {
     private static final String PATH_DIC_PREP = "preposition.dic";
     private static final String PATH_DIC_STOP = "stopword.dic";
 
-    private final static String FILE_NAME = "IKAnalyzer.cfg.xml";
-    private final static String EXT_DICT = "ext_dict";
-    private final static String REMOTE_EXT_DICT = "remote_ext_dict";
-    private final static String EXT_STOP = "ext_stopwords";
-    private final static String REMOTE_EXT_STOP = "remote_ext_stopwords";
+    private final static  String FILE_NAME = "IKAnalyzer.cfg.xml";
+    private final static  String EXT_DICT = "ext_dict";
+    private final static  String REMOTE_EXT_DICT = "remote_ext_dict";
+    private final static  String EXT_STOP = "ext_stopwords";
+    private final static  String REMOTE_EXT_STOP = "remote_ext_stopwords";
 
     private Path conf_dir;
     private Properties props;
@@ -125,13 +129,12 @@ public class Dictionary {
         }
     }
 
-    private String getProperty(String key) {
-        if (props != null) {
+    private String getProperty(String key){
+        if(props!=null){
             return props.getProperty(key);
         }
         return null;
     }
-
     /**
      * 词典初始化 由于IK Analyzer的词典采用Dictionary类的静态方法进行词典初始化
      * 只有当Dictionary类被实际调用时，才会开始载入词典， 这将延长首次分词操作的时间 该方法提供了一个在应用加载阶段就初始化字典的手段
@@ -151,7 +154,7 @@ public class Dictionary {
                     singleton.loadPrepDict();
                     singleton.loadStopWordDict();
 
-                    if (cfg.isEnableRemoteDict()) {
+                    if(cfg.isEnableRemoteDict()){
                         // 建立监控线程
                         for (String location : singleton.getRemoteExtDictionarys()) {
                             // 10 秒是初始延迟可以修改的 60是间隔时间 单位秒
@@ -177,7 +180,6 @@ public class Dictionary {
                     files.add(file.toString());
                     return FileVisitResult.CONTINUE;
                 }
-
                 @Override
                 public FileVisitResult visitFileFailed(Path file, IOException e) {
                     logger.error("[Ext Loading] listing files", e);
@@ -186,8 +188,7 @@ public class Dictionary {
             });
         } catch (IOException e) {
             logger.error("[Ext Loading] listing files", e);
-        }
-        else {
+        } else {
             logger.warn("[Ext Loading] file not found: " + path);
         }
     }
@@ -292,7 +293,7 @@ public class Dictionary {
      */
     public static Dictionary getSingleton() {
         if (singleton == null) {
-            throw new IllegalStateException("词典尚未初始化，请先调用initial方法");
+            throw new IllegalStateException("ik dict has not been initialized yet, please call initial method first.");
         }
         return singleton;
     }
@@ -417,7 +418,7 @@ public class Dictionary {
             List<String> lists = getRemoteWords(location);
             // 如果找不到扩展的字典，则忽略
             if (lists == null) {
-                logger.error("[Dict Loading] " + location + "加载失败");
+                logger.error("[Dict Loading] " + location + " load failed");
                 continue;
             }
             for (String theWord : lists) {
@@ -458,11 +459,11 @@ public class Dictionary {
                 String charset = "UTF-8";
                 // 获取编码，默认为utf-8
                 HttpEntity entity = response.getEntity();
-                if (entity != null) {
+                if(entity!=null){
                     Header contentType = entity.getContentType();
-                    if (contentType != null && contentType.getValue() != null) {
+                    if(contentType!=null&&contentType.getValue()!=null){
                         String typeValue = contentType.getValue();
-                        if (typeValue != null && typeValue.contains("charset=")) {
+                        if(typeValue!=null&&typeValue.contains("charset=")){
                             charset = typeValue.substring(typeValue.lastIndexOf("=") + 1);
                         }
                     }
@@ -516,7 +517,7 @@ public class Dictionary {
             List<String> lists = getRemoteWords(location);
             // 如果找不到扩展的字典，则忽略
             if (lists == null) {
-                logger.error("[Dict Loading] " + location + "加载失败");
+                logger.error("[Dict Loading] " + location + " load failed");
                 continue;
             }
             for (String theWord : lists) {
@@ -560,7 +561,7 @@ public class Dictionary {
     }
 
     void reLoadMainDict() {
-        logger.info("重新加载词典...");
+        logger.info("start to reload ik dict.");
         // 新开一个实例加载词典，减少加载过程对当前词典使用的影响
         Dictionary tmpDict = new Dictionary(configuration);
         tmpDict.configuration = getSingleton().configuration;
@@ -568,7 +569,7 @@ public class Dictionary {
         tmpDict.loadStopWordDict();
         _MainDict = tmpDict._MainDict;
         _StopWords = tmpDict._StopWords;
-        logger.info("重新加载词典完毕...");
+        logger.info("reload ik dict finished.");
     }
 
 }
