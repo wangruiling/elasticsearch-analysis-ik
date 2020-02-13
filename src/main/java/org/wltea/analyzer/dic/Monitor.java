@@ -1,5 +1,9 @@
 package org.wltea.analyzer.dic;
 
+import java.io.IOException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpHead;
@@ -8,10 +12,6 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.SpecialPermission;
 import org.wltea.analyzer.help.ESPluginLoggerFactory;
-
-import java.io.IOException;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 
 public class Monitor implements Runnable {
 
