@@ -29,7 +29,7 @@ package org.wltea.analyzer.core;
  *
  * 字符集识别工具类
  */
-class CharacterUtil {
+public class CharacterUtil {
 
     public static final int CHAR_USELESS = 0;
 
@@ -72,11 +72,7 @@ class CharacterUtil {
                     //日文字符集
                     || ub == Character.UnicodeBlock.HIRAGANA //平假名
                     || ub == Character.UnicodeBlock.KATAKANA //片假名
-                    || ub == Character.UnicodeBlock.KATAKANA_PHONETIC_EXTENSIONS
-                    /************** 2016/4/08 此处使用使用新的字符处理规则:特殊字符'-' By:wangrl start ****************/
-                    || input == '-'
-                    /************** 2016/4/08 此处使用使用新的字符处理规则 By:wangrl end ****************/
-            ){
+                    || ub == Character.UnicodeBlock.KATAKANA_PHONETIC_EXTENSIONS){
                 return CHAR_OTHER_CJK;
 
             }
