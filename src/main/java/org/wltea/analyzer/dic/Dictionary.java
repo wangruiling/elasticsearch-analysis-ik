@@ -76,7 +76,7 @@ public class Dictionary {
 
     private static final Logger logger = ESPluginLoggerFactory.getLogger(RemoteDicMonitor.class.getName());
 
-    private static ScheduledExecutorService pool;
+    private static ScheduledExecutorService pool = Executors.newScheduledThreadPool(1);;
 
     private RemoteDicMonitor dicMonitor;
 
@@ -110,14 +110,14 @@ public class Dictionary {
     }
 
     private void addMonitorTask(DicFile dicFile) {
-        if(pool == null){
-            synchronized (pool){
-                if(pool == null){
+//        if(pool == null){
+//            synchronized (pool){
+//                if(pool == null){
                     // 初始化监控任务
                     initRemoteMoniter();
-                }
-            }
-        }
+//                }
+//            }
+//        }
         RemoteDicMonitor.RemoteDicFile remoteDicFile = new RemoteDicMonitor.RemoteDicFile(dicFile.getAbsolutePath());
         remoteDicFile.setDicName(dicFile.getDicName());
         remoteDicFile.setDicPath(dicFile.getDicPath());
@@ -193,7 +193,7 @@ public class Dictionary {
     private static void initRemoteMoniter(){
         // 开启远程词典文件监控任务
         singleton.dicMonitor = new RemoteDicMonitor();
-        pool = Executors.newScheduledThreadPool(1);
+
         // 10 秒是初始延迟可以修改的 60是间隔时间 单位秒
         pool.scheduleAtFixedRate(singleton.dicMonitor, 10, 60, TimeUnit.SECONDS);
     }
