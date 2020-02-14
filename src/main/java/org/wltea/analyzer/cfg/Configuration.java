@@ -43,7 +43,6 @@ public class Configuration {
     @Inject
     public Configuration(Environment env, Settings settings) {
         this.absolutePath = env.configFile().resolve(AnalysisIkPlugin.PLUGIN_NAME).toAbsolutePath().toString();
-//		this.absolutePath = "C:\\Users\\jm005113\\Desktop\\workspace\\elasticsearch-analysis-ik\\config";
         this.useSmart = settings.get("use_smart", "false").equals("true");
         this.enableLowercase = settings.get("enable_lowercase", "true").equals("true");
         this.enableRemoteDict = settings.get("enable_remote_dict", "true").equals("true");
