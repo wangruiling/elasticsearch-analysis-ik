@@ -58,3 +58,77 @@ isRemote:true:是远程字典文件，false:是本地文件
 联系本人：871057529@qq.com
 
 
+---------------
+
+```
+PUT product_index
+{
+  "settings": {
+    "number_of_shards": 2,
+    "number_of_replicas": 0,
+    "analysis": {
+      "tokenizer": {
+        "ik_smart_product_tokenizer": {
+          "type": "ik_smart",
+          "ext_dic_main": [
+            "#dicName$extra-remote#dicPath$http://localhost:80/main.dic#isRemote$true",
+            "#dicName$extra-test#dicPath$extra_test.dic#isRemote$false"
+          ]
+        }
+      },
+      "analyzer": {
+        "ik_smart_product": {
+          "type": "custom",
+          "tokenizer": "ik_smart_product_tokenizer",
+          "filter": [
+            "lowercase"
+          ]
+        }
+      }
+    }
+  }
+}
+
+POST product_index/_analyze
+{
+  "analyzer": "ik_smart_product",
+  "text": "我是中国人，我的自行车和奔驰 蓝牛仔影像 北京有限公司商务公司"
+}
+```
+
+```
+PUT daoban_index
+{
+  "settings": {
+    "number_of_shards": 2,
+    "number_of_replicas": 0,
+    "analysis": {
+      "tokenizer": {
+        "ik_smart_daoban_tokenizer": {
+          "type": "ik_smart",
+          "ext_dic_main": [
+            "#dicName$extra-remote2#dicPath$http://localhost:80/daoban_search_main.dic#isRemote$true",
+            "#dicName$extra-test2#dicPath$extra_test2.dic#isRemote$false"
+          ]
+        }
+      },
+      "analyzer": {
+        "ik_smart_daoban": {
+          "type": "custom",
+          "tokenizer": "ik_smart_daoban_tokenizer",
+          "filter": [
+            "lowercase"
+          ]
+        }
+      }
+    }
+  }
+}
+
+POST daoban_index/_analyze
+{
+  "analyzer": "ik_smart_daoban",
+  "text": "我的黄牛台灯在阿里巴巴联想自行车和奔驰都存在民生银行里 蓝牛仔影像北京有限公司商务公司"
+}
+```
+
