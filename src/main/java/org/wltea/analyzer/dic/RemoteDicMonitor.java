@@ -201,6 +201,9 @@ public class RemoteDicMonitor implements Runnable {
                         in = new BufferedReader(new InputStreamReader(entity.getContent(), charset));
                         String line;
                         while ((line = in.readLine()) != null) {
+                            if (line.startsWith("\uFEFF")) {
+                                line = line.substring(1);
+                            }
                             buffer.add(line);
                         }
                         in.close();
