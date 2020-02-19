@@ -1,24 +1,24 @@
-package org.wltea.analyzer.cfg;
+package org.wltea.analyzer.dic;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.env.Environment;
 import org.junit.jupiter.api.Test;
-import org.wltea.analyzer.dic.DicFile;
+import org.wltea.analyzer.cfg.Configuration;
 
+import static org.junit.jupiter.api.Assertions.*;
 
-class ConfigurationTest {
+class DictionaryTest {
 
     @Test
-    void testConfiguration() {
+    void loadAllDictFiles() {
         List<String> ext_dic_main_list = new ArrayList<>();
         ext_dic_main_list.add("#dicName$extra#dicPath$extra_test.dic#isRemote$false");
-        ext_dic_main_list.add("#dicName$extra2#dicPath$http://localhost:80/extra_test2.dic#isRemote$true");
+        ext_dic_main_list.add("#dicName$extra2#dicPath$extra_test2.dic#isRemote$false");
 
         Settings settings =  Settings.builder()
                 .put("path.home", "C:/tools/elastic/elasticsearch-7.5.2")
@@ -33,10 +33,7 @@ class ConfigurationTest {
 
         Configuration configuration = new Configuration(env, settings).setUseSmart(true);
 
-        List<DicFile> dicFiles = configuration.getDicFiles();
-        System.out.println(dicFiles.size());
-        dicFiles.forEach(dicFile -> {
-            System.out.println("dicName=" + dicFile.getDicName() + ";dicPath=" + dicFile.getAbsolutePath() + "\\" + dicFile.getDicPath());
-        });
+        // 初始化词典
+        Dictionary.getSingleton().loadAllDictFiles(configuration.getDicFiles());
     }
 }
