@@ -33,10 +33,10 @@ class ConfigurationTest {
 
         Configuration configuration = new Configuration(env, settings).setUseSmart(true);
 
-        List<DicFile> dicFiles = configuration.getDicFiles();
-        System.out.println(dicFiles.size());
-        dicFiles.forEach(dicFile -> {
-            System.out.println("dicName=" + dicFile.getDicName() + ";dicPath=" + dicFile.getAbsolutePath() + "\\" + dicFile.getDicPath());
-        });
+//        List<DicFile> dicFiles = configuration.getDicFiles();
+//        System.out.println(dicFiles.size());
+//        dicFiles.forEach(dicFile -> {
+//            System.out.println("dicName=" + dicFile.getDicName() + ";dicPath=" + dicFile.getAbsolutePath() + "\\" + dicFile.getDicPath());
+//        });
     }
 }

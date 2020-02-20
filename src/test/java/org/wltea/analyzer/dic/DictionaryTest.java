@@ -10,7 +10,6 @@ import org.elasticsearch.env.Environment;
 import org.junit.jupiter.api.Test;
 import org.wltea.analyzer.cfg.Configuration;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 class DictionaryTest {
 
@@ -34,6 +33,6 @@ class DictionaryTest {
         Configuration configuration = new Configuration(env, settings).setUseSmart(true);
 
         // 初始化词典
-        Dictionary.getSingleton().loadAllDictFiles(configuration.getDicFiles());
+//        Dictionary.getSingleton().loadAllDictFiles(configuration.getDicFiles());
     }
 }
