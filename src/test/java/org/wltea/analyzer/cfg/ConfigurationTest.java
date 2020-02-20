@@ -9,7 +9,6 @@ import java.util.List;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.env.Environment;
 import org.junit.jupiter.api.Test;
-import org.wltea.analyzer.dic.DicFile;
 
 
 class ConfigurationTest {
